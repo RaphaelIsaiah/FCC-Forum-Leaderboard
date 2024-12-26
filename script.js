@@ -1,13 +1,14 @@
-// Start
+// URL constants for fetching data and constructing links
 const forumLatest =
   "https://cdn.freecodecamp.org/curriculum/forum-latest/latest.json";
 const forumTopicUrl = "https://forum.freecodecamp.org/t/";
 const forumCategoryUrl = "https://forum.freecodecamp.org/c/";
 const avatarUrl = "https://sea1.discourse-cdn.com/freecodecamp";
 
+// Selecting the posts container element from the DOM
 const postsContainer = document.getElementById("posts-container");
 
-// Object to store all the categories.
+// Object to store all the categories with their IDs, names, and class names
 const allCategories = {
   299: { category: "Career Advice", className: "career" },
   409: { category: "Project Feedback", className: "feedback" },
@@ -19,17 +20,19 @@ const allCategories = {
   560: { category: "Backend Development", className: "backend" },
 };
 
-// Function to get the category name and class name.
+// Function to get the category name and class name for a given category ID
 const forumCategory = (id) => {
   // Store for category name and class name of each category.
   let selectedCategory = {};
 
+  // Check if the category ID exists in the allCategories object
   if (allCategories.hasOwnProperty(id)) {
     const { className, category } = allCategories[id];
 
     selectedCategory.className = className;
     selectedCategory.category = category;
   } else {
+    // Default to "General" category if ID does not exist
     selectedCategory.className = "general";
     selectedCategory.category = "General";
     selectedCategory.id = 1;
@@ -54,6 +57,7 @@ const timeAgo = (time) => {
   const hoursAgo = Math.floor(minutesAgo / 60);
   const daysAgo = Math.floor(hoursAgo / 24);
 
+  // Return the time difference in a human-readable format
   if (minutesAgo < 60) {
     return `${minutesAgo}m ago`;
   }
@@ -65,7 +69,7 @@ const timeAgo = (time) => {
   return `${daysAgo}d ago`;
 };
 
-// Function to display the number of views.
+// Function to format and display the number of views.
 const viewCount = (views) => {
   const thousands = Math.floor(views / 1000);
   if (views >= 1000) {
@@ -92,12 +96,14 @@ const getRandomFallbackAvatar = () => {
   return fallbackAvatarUrls[randomIndex];
 };
 
-// Function to get the avatars of the users.
+// Function to generate HTML for the user avatars
 const avatars = (posters, users) => {
   return posters
     .map((poster) => {
+      // Find the user object with the same ID as the poster's user_id
       const user = users.find((user) => user.id === poster.user_id);
       if (user) {
+        // Replace the {size} placeholder in the avatar template with 30
         const avatar = user.avatar_template.replace(/{size}/, 30);
         const userAvatarUrl = avatar.startsWith("/user_avatar/")
           ? avatarUrl.concat(avatar)
@@ -111,7 +117,7 @@ const avatars = (posters, users) => {
     .join("");
 };
 
-// Fetching data from the API.
+// Async function to fetch data from the API.
 const fetchData = async () => {
   try {
     const res = await fetch(forumLatest);
@@ -122,12 +128,15 @@ const fetchData = async () => {
   }
 };
 
+// Call fetchData to initiate data fetching and display
 fetchData();
 
-// Displaying data on the page.
+// Function to display the latest forum posts on the page
 const showLatestPosts = (data) => {
   const { topic_list, users } = data;
   const { topics } = topic_list;
+
+  // Generate and set the HTML for the posts container
   postsContainer.innerHTML = topics
     .map((item) => {
       const {
